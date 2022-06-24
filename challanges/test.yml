@@ -1,0 +1,53 @@
+Parameters:
+  myVPC:
+    Description: a parameter that allows us to specify the wanted VPC
+    Type: AWS::EC2::VPC::Id
+  myAMIInstance:
+    Description: a parameter that allows us to specify the AMI used.
+    Type: AWS::EC2::Image::Id
+  mySubnet:
+    Description: a parameter that allows us to speficy the subnet used
+    Type: AWS::EC2::Subnet::Id
+  MyKey:
+    Description: a parameter specifying the key used.
+    Type: AWS::EC2::KeyPair::KeyName
+  MyScript:
+    Description: a script run after creation of EC2 Instance.
+    Type: String
+Resources:
+  MyWebAccessSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: This is a group created using aws cli cloudformation, it should 
+      GroupName: UnlimitedHTTPAccess
+      VpcId: 
+        Ref: myVPC
+      SecurityGroupIngress:
+        -
+          CidrIp: 0.0.0.0/0
+          Description: allows outbound to anywhere
+          FromPort: 80
+          IpProtocol: tcp
+          ToPort: 80
+      SecurityGroupEgress:
+        -
+          CidrIp: 0.0.0.0/0
+          Description: allows inbound connections from anywhere
+          FromPort: -1
+          IpProtocol: -1
+          ToPort: -1
+  MyWebServerInstance:
+    Type: AWS::EC2::Instance
+    Properties: 
+      ImageId: !Ref myAMIInstance
+      KeyName: !Ref MyKey
+      InstanceType: t2.micro
+      NetworkInterfaces:
+        - AssociatePublicIpAddress: True
+          DeviceIndex: "0"
+          GroupSet:
+            - Ref: "MyWebAccessSecurityGroup"
+          SubnetId:
+            Ref: "mySubnet"
+      UserData:
+        Fn::Base64: !Ref MyScript
