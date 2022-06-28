@@ -8,8 +8,8 @@ random_string() {
     echo --stack-name stack-$(date +%F)-$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w ${1:-4} | head -n 1)
 }
 
-SHORT=d,u,f:,p:,l::,v:,h
-LONG=deploy,update,name::,file:,parameters:,list::,validate:,help
+SHORT=c,d,u,f:,p:,l::,v:,h
+LONG=create,delete,update,name::,file:,parameters:,list::,validate:,help
 OPTS=$(getopt -o $SHORT --long $LONG -- "$@")
 #if the command is deploy, it'll need to have a template-file
 file_flag=0
@@ -19,10 +19,15 @@ eval set -- "$OPTS"
 
 while true; do
     case "$1" in
-        -d | --deploy)
+        -c | --create)
             cloudformation_command="aws cloudformation create-stack "
             file_flag=1
             name_flag=1
+            # shift
+            ;;
+        -d | --delete)
+            cloudformation_command="aws cloudformation delete-stack "
+            delete_flag=1
             # shift
             ;;
         -u | --update)
@@ -34,6 +39,7 @@ while true; do
         --name)
             stack_name="--stack-name $( [[ -z $2 ]] && random_string || echo $2)"
             name_flag=0
+            delete_flag=0
             shift
             ;;
         -f | --file)
@@ -96,7 +102,17 @@ if [[ file_flag -eq 1 ]]; then
         name_flag=0
     }
 fi
-
+if [[ delete_flag -eq 1 ]]; then
+    names=$(aws cloudformation describe-stacks --query "Stacks[].{StackName:StackName}")
+    [[ "names" = "[]" ]] && {
+        echo $names
+        echo -n "stack-name: "
+        read stack_name
+    } || {
+        echo "there are no stacks to delete"
+        exit 0
+    }
+fi
 echo $cloudformation_command $stack_name $template_body $parameters
 # echo $( [[ -z $stack_name ]] && random_string || echo $stack_name)
 # set
