@@ -173,11 +173,6 @@ Resources:
       MaxSize: '6'
       VPCZoneIdentifier: [!Ref PrivateSubnet0, !Ref PrivateSubnet1]
       TargetGroupARNs: [!Ref HTTPTargetGroup]
-      BlockDeviceMappings:
-        - DeviceName: "/dev/sdb"
-          Ebs:
-              VolumeSize: '10' #10GB
-              DeleteOnTermination: true
       Tags:
           - Key: "Name"
             PropagateAtLaunch: false
@@ -288,6 +283,11 @@ Resources:
       ImageId: ami-0729e439b6769d6ab
       SecurityGroups: [!Ref ApplicationSecurityGroup]
       InstanceType: 't3.small'
+      BlockDeviceMappings:
+        - DeviceName: "/dev/sdb"
+          Ebs:
+              VolumeSize: '10' #10GB
+              DeleteOnTermination: true
 #Elastic Ips
   NATElasticIP0:
     Type: "AWS::EC2::EIP"
