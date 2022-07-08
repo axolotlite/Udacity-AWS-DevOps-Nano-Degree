@@ -4,7 +4,7 @@ In this project, I was tasked with deploying web servers for a highly available 
 ### Server Specifications
 The auto-scaling group creates 4-6 servers spread evenly into 2 private subnets. Each private subnet is routed to a public subnet connected to the internet. I've opted to use a main route table connecting all subnets to allow a bastion host to ssh into any EC2 Instance present in either of the subnets.
 ### The Cloud Diagram
-![Alt text](/images/AWS_related_diagram.drawio.png "Cloud Diagram for High Availability Web Apps"
+![Alt text](/images/AWS_related_diagram.drawio.png "Cloud Diagram for High Availability Web Apps")
 
 #### Scripts Usage
 parameterize: interactive parameter setter for yml files 
