@@ -173,6 +173,11 @@ Resources:
       MaxSize: '6'
       VPCZoneIdentifier: [!Ref PrivateSubnet0, !Ref PrivateSubnet1]
       TargetGroupARNs: [!Ref HTTPTargetGroup]
+      BlockDeviceMappings:
+        - DeviceName: "/dev/sdb"
+          Ebs:
+              VolumeSize: '10' #10GB
+              DeleteOnTermination: true
       Tags:
           - Key: "Name"
             PropagateAtLaunch: false
@@ -281,7 +286,6 @@ Resources:
           echo "it works! Udagram, Udacity" > /var/www/html/index.html
           echo "Datetime of creation: $(date)" >> /var/www/html/index.html
       ImageId: ami-0729e439b6769d6ab
-      KeyName: !Ref ApplicationSSHKey
       SecurityGroups: [!Ref ApplicationSecurityGroup]
       InstanceType: 't3.small'
 #Elastic Ips
@@ -306,10 +310,6 @@ Resources:
       KeyName: !Ref BastionSSHKey
       SubnetId: !Ref PublicSubnet0
       SecurityGroupIds: [!Ref BastionSecurityGroup]
-      BlockDeviceMappings:
-        - DeviceName: "/dev/sdb"
-          Ebs:
-              VolumeSize: '10' #10GB
       Tags:
         - Key: Name
           Value: !Sub '${AWS::StackName}-Bastion-Instance'
