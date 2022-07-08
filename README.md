@@ -12,7 +12,9 @@ without an optional output name, the script creates a parameters.json file
 ```
 ./parameterize.sh file.yml (optional-parameter-name)
 ```
-blah blah something something
+create.sh: will by default target project2.yml and parameters.json then create a stack named "UdacityProject"
+however you can manually specify its parameters if you want.
 ```
-./create.sh
+./create.sh (optional-stack-name) (optional-stack-file) (optional-stack-parameters)
 ```
+## [My Load Balancer DNS URL](http://Udaci-Elast-NFG71AN4S4R5-92210376.us-east-1.elb.amazonaws.com)

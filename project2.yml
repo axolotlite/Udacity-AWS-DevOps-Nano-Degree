@@ -278,7 +278,7 @@ Resources:
           apt-get install unzip awscli -y
           apt-get install apache2 -y
           systemctl start apache2.service
-          echo "it works! Udagram, Udacity\" > /var/www/html/index.html
+          echo "it works! Udagram, Udacity" > /var/www/html/index.html
           echo "Datetime of creation: $(date)" >> /var/www/html/index.html
       ImageId: ami-0729e439b6769d6ab
       KeyName: !Ref ApplicationSSHKey
