@@ -6,5 +6,13 @@
 	{
 		"ParameterKey": "ApplicationSSHKey",
 		"ParameterValue": "privateMachine"
+	},
+	{
+		"ParameterKey": "AvailabilityZoneA",
+		"ParameterValue": "us-east-1a"
+	},
+	{
+		"ParameterKey": "AvailabilityZoneB",
+		"ParameterValue": "us-east-1b"
 	}
 ]

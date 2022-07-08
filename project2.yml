@@ -1,9 +1,6 @@
 Description: >
   Udacity cloud devops nano degree, second project.
-#on public routing, one can make a subnet public by adding it to the main internet gateway with a route "0.0.0.0/0"
-#this means the subnet has access to the internet
-#the same logic can be be applied to other subnets, to allow commumincation between them you must add a NATgateway to the subnets route table
-#on nats, they're used in private subnets to allow them external access while preventing external services from initiating a connection with whomever is in the private subnet
+
 Parameters:
   BastionSSHKey:
     Description: The name of the key used for the bastion host
@@ -11,7 +8,12 @@ Parameters:
   ApplicationSSHKey:
     Description: The name of the key used for the Application, it's left default once its no longer needed
     Type: String
-    Default: ''
+  AvailabilityZoneA:
+    Description: The first availability zone used in app deployment
+    Type: AWS::EC2::AvailabilityZone::Name
+  AvailabilityZoneB:
+    Description: The first availability zone used in app deployment
+    Type: AWS::EC2::AvailabilityZone::Name
 Mappings:
   SubnetConfig:
     VPC:
@@ -25,7 +27,6 @@ Mappings:
     Private1:
       CIDR: "10.0.3.0/24"
 Resources:
-#The main VPC containing everything()
   VPC:
     Type: AWS::EC2::VPC
     Properties:
@@ -33,14 +34,11 @@ Resources:
       Tags:
         - Key: Name
           Value: !Sub "${AWS::StackName}-VPC"
-#The 4 subnets, 2 public containing natgateways connecting the 2 private subnets
-  #private subnets
-    #These private subnets are not given a public IP on launch to prevent unwanted access
   PrivateSubnet0:
     Type: AWS::EC2::Subnet
     Properties:
       VpcId: !Ref VPC
-      AvailabilityZone: !Select [0, !GetAZs '']
+      AvailabilityZone: !Ref AvailabilityZoneA
       CidrBlock: !FindInMap ["SubnetConfig", "Private0", "CIDR"]
       MapPublicIpOnLaunch: false
       Tags:
@@ -50,18 +48,16 @@ Resources:
     Type: AWS::EC2::Subnet
     Properties:
       VpcId: !Ref VPC
-      AvailabilityZone: !Select [1, !GetAZs '']
+      AvailabilityZone: !Ref AvailabilityZoneB
       CidrBlock: !FindInMap ["SubnetConfig", "Private1", "CIDR"]
       MapPublicIpOnLaunch: false
       Tags:
         - Key: Name
           Value: !Sub "${AWS::StackName}-Private-Subnet-1"
-  #public subnet
-    #These ones are not given public ips because they'll be given elastic IPs.
   PublicSubnet0:
     Type: AWS::EC2::Subnet
     Properties:
-      AvailabilityZone: !Select [0, !GetAZs '']
+      AvailabilityZone: !Ref AvailabilityZoneA
       VpcId: !Ref VPC
       CidrBlock: !FindInMap ["SubnetConfig", "Public0", "CIDR"]
       MapPublicIpOnLaunch: false
@@ -71,7 +67,7 @@ Resources:
   PublicSubnet1:
     Type: AWS::EC2::Subnet
     Properties:
-      AvailabilityZone: !Select [1, !GetAZs '']
+      AvailabilityZone: !Ref AvailabilityZoneB
       VpcId: !Ref VPC
       CidrBlock: !FindInMap ["SubnetConfig", "Public1", "CIDR"]
       MapPublicIpOnLaunch: false
@@ -79,21 +75,19 @@ Resources:
         - Key: Name
           Value: !Sub "${AWS::StackName}-Public-Subnet-1"
 #Gateways then their attachments
-  #The main internet gateway
   InternetGateway:
     Type: AWS::EC2::InternetGateway
     Properties:
       Tags:
         - Key: Name
           Value: !Sub "${AWS::StackName}-InternetGateway"
-  #its attachment to the VPC, i don't think i need to name the attachment
+          
   VPCGatewayAttachment:
     Type: AWS::EC2::VPCGatewayAttachment
     Properties:
       InternetGatewayId: !Ref InternetGateway
       VpcId: !Ref VPC
-  #nat gateways and their respective subnets and elastic ips
-    #natgateways are only applicable for public subnets
+      
   PublicNATGateway0:
     Type: "AWS::EC2::NatGateway"
     Properties:
@@ -105,8 +99,6 @@ Resources:
       SubnetId: !Ref "PublicSubnet1"
       AllocationId: !GetAtt [ "NATElasticIP1", "AllocationId" ]
 #Routetables
-  #The default/main routetable, all traffic goes through here.
-  #it also routes it through the internet gateway.
   MainRouteTable:
     Type: "AWS::EC2::RouteTable"
     Properties:
@@ -114,9 +106,7 @@ Resources:
       Tags:
         - Key: Name
           Value: !Sub "${AWS::StackName}-Main-Routetable"
-  #The private route table should allow routes to:
-    #internet for application updates
-    #public nat for the loadbalancer forwarding
+
   PrivateRouteTable0:
     Type: "AWS::EC2::RouteTable"
     Properties:
@@ -132,7 +122,6 @@ Resources:
           - Key: "Name"
             Value: !Sub '${AWS::StackName}-Private-Route-Table-1'
 #The association between the routetables and their respective subnets
-  #The public subnets are associated with the main route, since they have unlimited access to the internet
   PublicSubnet0MainRouteTableAssociation:
     Type: AWS::EC2::SubnetRouteTableAssociation
     Properties:
@@ -143,20 +132,18 @@ Resources:
     Properties:
       RouteTableId: !Ref MainRouteTable
       SubnetId: !Ref PublicSubnet1
-  #The private subnet will be associated with their respective route tables.
   PrivateSubnet0RouteTableAssociation:
     Type: AWS::EC2::SubnetRouteTableAssociation
     Properties:
       RouteTableId: !Ref PrivateRouteTable0
       SubnetId: !Ref PrivateSubnet0
-  #subnet route association of private subnet 1 and its route table
   PrivateSubnet1RouteTableAssociation:
     Type: AWS::EC2::SubnetRouteTableAssociation
     Properties:
       RouteTableId: !Ref PrivateRouteTable1
       SubnetId: !Ref PrivateSubnet1
 #Routes and theis association to the route table
-  #The route into the internet, it allows traffic anywhere in the internet(0.0.0.0/0)
+
   InternetRoute:
     Type: AWS::EC2::Route
     DependsOn: VPCGatewayAttachment
@@ -164,7 +151,7 @@ Resources:
       RouteTableId: !Ref MainRouteTable
       DestinationCidrBlock: 0.0.0.0/0
       GatewayId: !Ref InternetGateway
-  #private routes to everything on the public subnet and by proxy: the internet
+      
   PrivateRouteNatGateway0:
     Type: "AWS::EC2::Route"
     Properties:
@@ -178,7 +165,6 @@ Resources:
       DestinationCidrBlock: "0.0.0.0/0"
       NatGatewayId: !Ref "PublicNATGateway1"
 #Autoscaling and its target group
-  #This launches ec2 instances in their respective subnets
   UbuntuAutoscalingGroup:
     Type: AWS::AutoScaling::AutoScalingGroup
     Properties:
@@ -189,6 +175,7 @@ Resources:
       TargetGroupARNs: [!Ref HTTPTargetGroup]
       Tags:
           - Key: "Name"
+            PropagateAtLaunch: false
             Value: !Sub '${AWS::StackName}-Ubuntu-HTTP-Autoscaling-Group'
   HTTPTargetGroup:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
@@ -204,7 +191,6 @@ Resources:
       UnhealthyThresholdCount: 5
       VpcId: !Ref VPC
 #Loadbalancer and its related settings
-  #the load balancer (application type) and its related subnets
   ElasticLoadBalancer:
     Type: AWS::ElasticLoadBalancingV2::LoadBalancer
     Properties:
@@ -236,11 +222,11 @@ Resources:
           ListenerArn: !Ref HTTPListener
           Priority: 1 
 #Security Groups
-  #The loadbalancer security group should allow incoming connections at port 80(http), the load balancer should already ahve access to the internet so no need to specify egress
   LoadBalancerSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
       VpcId: !Ref VPC
+      GroupDescription: allows any ip address to connect to our loadbalancers port 80
       SecurityGroupIngress:
         - IpProtocol: tcp
           CidrIp: 0.0.0.0/0
@@ -249,11 +235,12 @@ Resources:
       Tags:
           - Key: "Name"
             Value: !Sub '${AWS::StackName}-Loadbalancer-Security-Group'
-  #This allows us to ssh into our bastion host
+
   BastionSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
       VpcId: !Ref VPC
+      GroupDescription: Allows anyone to access the basion host ssh port
       SecurityGroupIngress:
         - IpProtocol: tcp
           FromPort: 22
@@ -262,12 +249,12 @@ Resources:
       Tags:
           - Key: "Name"
             Value: !Sub '${AWS::StackName}-Bastion-Security-Group'
-  #This is the security group responsible for the load balancer to communicate with this application
-  #the ssh is currently open for everyone just for debugging reasons, it will late be locked down only for the bastion host
+
   ApplicationSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
       VpcId: !Ref VPC
+      GroupDescription: allows anyone with route to this application to access its http and only bastion host to access its ssh port
       SecurityGroupIngress:
         - IpProtocol: tcp
           FromPort: 80
@@ -291,14 +278,12 @@ Resources:
           apt-get install unzip awscli -y
           apt-get install apache2 -y
           systemctl start apache2.service
-          echo -e "Udacity Project 2: Electric Boogaloo\nCreated on $(date)" > /var/www/html/index.html
+          echo "it works! Udagram, Udacity\" > /var/www/html/index.html
+          echo "Datetime of creation: $(date)" >> /var/www/html/index.html
       ImageId: ami-0729e439b6769d6ab
       KeyName: !Ref ApplicationSSHKey
       SecurityGroups: [!Ref ApplicationSecurityGroup]
       InstanceType: 't3.small'
-      Tags:
-          - Key: "Name"
-            Value: !Sub '${AWS::StackName}-Ubuntu-HTTP-Launch-Configs'
 #Elastic Ips
   NATElasticIP0:
     Type: "AWS::EC2::EIP"
@@ -321,6 +306,10 @@ Resources:
       KeyName: !Ref BastionSSHKey
       SubnetId: !Ref PublicSubnet0
       SecurityGroupIds: [!Ref BastionSecurityGroup]
+      BlockDeviceMappings:
+        - DeviceName: "/dev/sdb"
+          Ebs:
+              VolumeSize: '10' #10GB
       Tags:
         - Key: Name
           Value: !Sub '${AWS::StackName}-Bastion-Instance'
@@ -330,13 +319,13 @@ Resources:
       EIP: !Ref BastionElasticIP
       InstanceId: !Ref BastionInstance
 Outputs:
-  LoadbalancerURL:
-    Description: URL of the load balancer for quick access
-    Value: !Sub "http://${ElasticLoadBalancer.DNSName}"
-    Export:
-      Name: !Sub ${AWS::StackName}-LoadBalancer-URL
   BastionPublicIp:
     Description: 'Bastion public ip'
     Value: !Sub '${BastionInstance.PublicIp}'
     Export:
       Name: BastionPublicIp
+  LoadbalancerURL:
+    Description: URL of the load balancer for quick access
+    Value: !Sub "http://${ElasticLoadBalancer.DNSName}"
+    Export:
+      Name: !Sub ${AWS::StackName}-LoadBalancer-URL

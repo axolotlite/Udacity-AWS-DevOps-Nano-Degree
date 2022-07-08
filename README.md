@@ -1,24 +1,18 @@
-# [Advanced Cloud DevOps](https://www.udacity.com/course/cloud-dev-ops-nanodegree--nd9991)
-## Nanodegree Program _by Udacity_
----
-This is my repo containing exercises, scripts and challanges from the Advanced Cloud DevOps Nanodegree, I am planing on using bash scripting to streamline the tasks written both as a way to gain more practical understanding of what is being asked of me and to further my bash experience. 
-The repo will be seperated into branches, each containing its respective material until I finish the course then I shall merge all of the material into main in a neat and orderly fashion.
-This course was generously provided by [EG-FWD Initiative](https://egfwd.com/).
-### Table of contents
-* [Branches]()
-* [Scripts]()
-* [Exercises]()
-* [Projects]()
+# Project Title - Deploy a high-availability web app using CloudFormation
+### Introduction
+In this project, I was tasked with deploying web servers for a highly available web app using CloudFormation. I have drawn a cloud diagram and written the cloudformation code that creates and deploys the infrastructure and application. I've began by deploying the networking components, followed by servers, security roles and software. Hoepfully this procedure strengthens my portfolio.
+### Server Specifications
+The auto-scaling group creates 4-6 servers spread evenly into 2 private subnets. Each private subnet is routed to a public subnet connected to the internet. I've opted to use a main route table connecting all subnets to allow a bastion host to ssh into any EC2 Instance present in either of the subnets.
+### The Cloud Diagram
+![Alt text](/images/AWS_related_diagram.drawio.png "Cloud Diagram for High Availability Web Apps"
 
-### Branches
-* main
-* scripting
-* challanges
-* exercises
-* projects
-
-### Scripts
-
-### Exercises
-
-### Projects
+#### Scripts Usage
+parameterize: interactive parameter setter for yml files 
+without an optional output name, the script creates a parameters.json file
+```
+./parameterize.sh file.yml (optional-parameter-name)
+```
+blah blah something something
+```
+./create.sh
+```
