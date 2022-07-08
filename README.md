@@ -17,4 +17,4 @@ however you can manually specify its parameters if you want.
 ```
 ./create.sh (optional-stack-name) (optional-stack-file) (optional-stack-parameters)
 ```
-## [My Load Balancer DNS URL](http://Udaci-Elast-NFG71AN4S4R5-92210376.us-east-1.elb.amazonaws.com)
+## [My Load Balancer DNS URL](http://Udaci-Elast-EIJS1ZBKIRWB-19340612.us-east-1.elb.amazonaws.com)
