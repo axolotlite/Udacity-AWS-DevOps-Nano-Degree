@@ -1,0 +1,10 @@
+[
+	{
+		"ParameterKey": "BastionSSHKey",
+		"ParameterValue": "IAS_key"
+	},
+	{
+		"ParameterKey": "ApplicationSSHKey",
+		"ParameterValue": "privateMachine"
+	}
+]
