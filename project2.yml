@@ -27,77 +27,77 @@ Mappings:
     Private1:
       CIDR: "10.0.3.0/24"
 Resources:
-  VPC:
-    Type: AWS::EC2::VPC
-    Properties:
-      CidrBlock: !FindInMap ["SubnetConfig", "VPC", "CIDR"]
-      Tags:
-        - Key: Name
-          Value: !Sub "${AWS::StackName}-VPC"
-  PrivateSubnet0:
-    Type: AWS::EC2::Subnet
-    Properties:
-      VpcId: !Ref VPC
-      AvailabilityZone: !Ref AvailabilityZoneA
-      CidrBlock: !FindInMap ["SubnetConfig", "Private0", "CIDR"]
-      MapPublicIpOnLaunch: false
-      Tags:
-        - Key: Name
-          Value: !Sub "${AWS::StackName}-Private-Subnet-0"
-  PrivateSubnet1:
-    Type: AWS::EC2::Subnet
-    Properties:
-      VpcId: !Ref VPC
-      AvailabilityZone: !Ref AvailabilityZoneB
-      CidrBlock: !FindInMap ["SubnetConfig", "Private1", "CIDR"]
-      MapPublicIpOnLaunch: false
-      Tags:
-        - Key: Name
-          Value: !Sub "${AWS::StackName}-Private-Subnet-1"
-  PublicSubnet0:
-    Type: AWS::EC2::Subnet
-    Properties:
-      AvailabilityZone: !Ref AvailabilityZoneA
-      VpcId: !Ref VPC
-      CidrBlock: !FindInMap ["SubnetConfig", "Public0", "CIDR"]
-      MapPublicIpOnLaunch: false
-      Tags:
-        - Key: Name
-          Value: !Sub "${AWS::StackName}-Public-Subnet-0"
-  PublicSubnet1:
-    Type: AWS::EC2::Subnet
-    Properties:
-      AvailabilityZone: !Ref AvailabilityZoneB
-      VpcId: !Ref VPC
-      CidrBlock: !FindInMap ["SubnetConfig", "Public1", "CIDR"]
-      MapPublicIpOnLaunch: false
-      Tags:
-        - Key: Name
-          Value: !Sub "${AWS::StackName}-Public-Subnet-1"
+  # VPC:
+  #   Type: AWS::EC2::VPC
+  #   Properties:
+  #     CidrBlock: !FindInMap ["SubnetConfig", "VPC", "CIDR"]
+  #     Tags:
+  #       - Key: Name
+  #         Value: !Sub "${AWS::StackName}-VPC"
+  # PrivateSubnet0:
+  #   Type: AWS::EC2::Subnet
+  #   Properties:
+  #     VpcId: !Ref VPC
+  #     AvailabilityZone: !Ref AvailabilityZoneA
+  #     CidrBlock: !FindInMap ["SubnetConfig", "Private0", "CIDR"]
+  #     MapPublicIpOnLaunch: false
+  #     Tags:
+  #       - Key: Name
+  #         Value: !Sub "${AWS::StackName}-Private-Subnet-0"
+  # PrivateSubnet1:
+  #   Type: AWS::EC2::Subnet
+  #   Properties:
+  #     VpcId: !Ref VPC
+  #     AvailabilityZone: !Ref AvailabilityZoneB
+  #     CidrBlock: !FindInMap ["SubnetConfig", "Private1", "CIDR"]
+  #     MapPublicIpOnLaunch: false
+  #     Tags:
+  #       - Key: Name
+  #         Value: !Sub "${AWS::StackName}-Private-Subnet-1"
+  # PublicSubnet0:
+  #   Type: AWS::EC2::Subnet
+  #   Properties:
+  #     AvailabilityZone: !Ref AvailabilityZoneA
+  #     VpcId: !Ref VPC
+  #     CidrBlock: !FindInMap ["SubnetConfig", "Public0", "CIDR"]
+  #     MapPublicIpOnLaunch: false
+  #     Tags:
+  #       - Key: Name
+  #         Value: !Sub "${AWS::StackName}-Public-Subnet-0"
+  # PublicSubnet1:
+  #   Type: AWS::EC2::Subnet
+  #   Properties:
+  #     AvailabilityZone: !Ref AvailabilityZoneB
+  #     VpcId: !Ref VPC
+  #     CidrBlock: !FindInMap ["SubnetConfig", "Public1", "CIDR"]
+  #     MapPublicIpOnLaunch: false
+  #     Tags:
+  #       - Key: Name
+  #         Value: !Sub "${AWS::StackName}-Public-Subnet-1"
 #Gateways then their attachments
-  InternetGateway:
-    Type: AWS::EC2::InternetGateway
-    Properties:
-      Tags:
-        - Key: Name
-          Value: !Sub "${AWS::StackName}-InternetGateway"
+  # InternetGateway:
+  #   Type: AWS::EC2::InternetGateway
+  #   Properties:
+  #     Tags:
+  #       - Key: Name
+  #         Value: !Sub "${AWS::StackName}-InternetGateway"
           
-  VPCGatewayAttachment:
-    Type: AWS::EC2::VPCGatewayAttachment
-    Properties:
-      InternetGatewayId: !Ref InternetGateway
-      VpcId: !Ref VPC
+  # VPCGatewayAttachment:
+  #   Type: AWS::EC2::VPCGatewayAttachment
+  #   Properties:
+  #     InternetGatewayId: !Ref InternetGateway
+  #     VpcId: !Ref VPC
       
-  PublicNATGateway0:
-    Type: "AWS::EC2::NatGateway"
-    Properties:
-      SubnetId: !Ref "PublicSubnet0"
-      AllocationId: !GetAtt [ "NATElasticIP0", "AllocationId" ]
-  PublicNATGateway1:
-    Type: "AWS::EC2::NatGateway"
-    Properties:
-      SubnetId: !Ref "PublicSubnet1"
-      AllocationId: !GetAtt [ "NATElasticIP1", "AllocationId" ]
+  # PublicNATGateway0:
+  #   Type: "AWS::EC2::NatGateway"
+  #   Properties:
+  #     SubnetId: !Ref "PublicSubnet0"
+  #     AllocationId: !GetAtt [ "NATElasticIP0", "AllocationId" ]
+  # PublicNATGateway1:
+  #   Type: "AWS::EC2::NatGateway"
+  #   Properties:
+  #     SubnetId: !Ref "PublicSubnet1"
+  #     AllocationId: !GetAtt [ "NATElasticIP1", "AllocationId" ]
 #Routetables
   MainRouteTable:
     Type: "AWS::EC2::RouteTable"
@@ -107,63 +107,63 @@ Resources:
         - Key: Name
           Value: !Sub "${AWS::StackName}-Main-Routetable"
 
-  PrivateRouteTable0:
-    Type: "AWS::EC2::RouteTable"
-    Properties:
-      VpcId: !Ref "VPC"
-      Tags:
-          - Key: "Name"
-            Value: !Sub '${AWS::StackName}-Private-Route-Table-0'
-  PrivateRouteTable1:
-    Type: "AWS::EC2::RouteTable"
-    Properties:
-      VpcId: !Ref "VPC"
-      Tags:
-          - Key: "Name"
-            Value: !Sub '${AWS::StackName}-Private-Route-Table-1'
+  # PrivateRouteTable0:
+  #   Type: "AWS::EC2::RouteTable"
+  #   Properties:
+  #     VpcId: !Ref "VPC"
+  #     Tags:
+  #         - Key: "Name"
+  #           Value: !Sub '${AWS::StackName}-Private-Route-Table-0'
+  # PrivateRouteTable1:
+  #   Type: "AWS::EC2::RouteTable"
+  #   Properties:
+  #     VpcId: !Ref "VPC"
+  #     Tags:
+  #         - Key: "Name"
+  #           Value: !Sub '${AWS::StackName}-Private-Route-Table-1'
 #The association between the routetables and their respective subnets
-  PublicSubnet0MainRouteTableAssociation:
-    Type: AWS::EC2::SubnetRouteTableAssociation
-    Properties:
-      RouteTableId: !Ref MainRouteTable
-      SubnetId: !Ref PublicSubnet0
-  PublicSubnet1MainRouteTableAssociation:
-    Type: AWS::EC2::SubnetRouteTableAssociation
-    Properties:
-      RouteTableId: !Ref MainRouteTable
-      SubnetId: !Ref PublicSubnet1
-  PrivateSubnet0RouteTableAssociation:
-    Type: AWS::EC2::SubnetRouteTableAssociation
-    Properties:
-      RouteTableId: !Ref PrivateRouteTable0
-      SubnetId: !Ref PrivateSubnet0
-  PrivateSubnet1RouteTableAssociation:
-    Type: AWS::EC2::SubnetRouteTableAssociation
-    Properties:
-      RouteTableId: !Ref PrivateRouteTable1
-      SubnetId: !Ref PrivateSubnet1
+  # PublicSubnet0MainRouteTableAssociation:
+  #   Type: AWS::EC2::SubnetRouteTableAssociation
+  #   Properties:
+  #     RouteTableId: !Ref MainRouteTable
+  #     SubnetId: !Ref PublicSubnet0
+  # PublicSubnet1MainRouteTableAssociation:
+  #   Type: AWS::EC2::SubnetRouteTableAssociation
+  #   Properties:
+  #     RouteTableId: !Ref MainRouteTable
+  #     SubnetId: !Ref PublicSubnet1
+  # PrivateSubnet0RouteTableAssociation:
+  #   Type: AWS::EC2::SubnetRouteTableAssociation
+  #   Properties:
+  #     RouteTableId: !Ref PrivateRouteTable0
+  #     SubnetId: !Ref PrivateSubnet0
+  # PrivateSubnet1RouteTableAssociation:
+  #   Type: AWS::EC2::SubnetRouteTableAssociation
+  #   Properties:
+  #     RouteTableId: !Ref PrivateRouteTable1
+  #     SubnetId: !Ref PrivateSubnet1
 #Routes and theis association to the route table
 
-  InternetRoute:
-    Type: AWS::EC2::Route
-    DependsOn: VPCGatewayAttachment
-    Properties:
-      RouteTableId: !Ref MainRouteTable
-      DestinationCidrBlock: 0.0.0.0/0
-      GatewayId: !Ref InternetGateway
+  # InternetRoute:
+  #   Type: AWS::EC2::Route
+  #   DependsOn: VPCGatewayAttachment
+  #   Properties:
+  #     RouteTableId: !Ref MainRouteTable
+  #     DestinationCidrBlock: 0.0.0.0/0
+  #     GatewayId: !Ref InternetGateway
       
-  PrivateRouteNatGateway0:
-    Type: "AWS::EC2::Route"
-    Properties:
-      RouteTableId: !Ref "PrivateRouteTable0"
-      DestinationCidrBlock: "0.0.0.0/0"
-      NatGatewayId: !Ref "PublicNATGateway0"
-  PrivateRouteNatGateway1:
-    Type: "AWS::EC2::Route"
-    Properties:
-      RouteTableId: !Ref "PrivateRouteTable1"
-      DestinationCidrBlock: "0.0.0.0/0"
-      NatGatewayId: !Ref "PublicNATGateway1"
+  # PrivateRouteNatGateway0:
+  #   Type: "AWS::EC2::Route"
+  #   Properties:
+  #     RouteTableId: !Ref "PrivateRouteTable0"
+  #     DestinationCidrBlock: "0.0.0.0/0"
+  #     NatGatewayId: !Ref "PublicNATGateway0"
+  # PrivateRouteNatGateway1:
+  #   Type: "AWS::EC2::Route"
+  #   Properties:
+  #     RouteTableId: !Ref "PrivateRouteTable1"
+  #     DestinationCidrBlock: "0.0.0.0/0"
+  #     NatGatewayId: !Ref "PublicNATGateway1"
 #Autoscaling and its target group
   UbuntuAutoscalingGroup:
     Type: AWS::AutoScaling::AutoScalingGroup
@@ -222,81 +222,81 @@ Resources:
           ListenerArn: !Ref HTTPListener
           Priority: 1 
 #Security Groups
-  LoadBalancerSecurityGroup:
-    Type: AWS::EC2::SecurityGroup
-    Properties:
-      VpcId: !Ref VPC
-      GroupDescription: allows any ip address to connect to our loadbalancers port 80
-      SecurityGroupIngress:
-        - IpProtocol: tcp
-          CidrIp: 0.0.0.0/0
-          FromPort: 80
-          ToPort: 80
-      Tags:
-          - Key: "Name"
-            Value: !Sub '${AWS::StackName}-Loadbalancer-Security-Group'
+  # LoadBalancerSecurityGroup:
+  #   Type: AWS::EC2::SecurityGroup
+  #   Properties:
+  #     VpcId: !Ref VPC
+  #     GroupDescription: allows any ip address to connect to our loadbalancers port 80
+  #     SecurityGroupIngress:
+  #       - IpProtocol: tcp
+  #         CidrIp: 0.0.0.0/0
+  #         FromPort: 80
+  #         ToPort: 80
+  #     Tags:
+  #         - Key: "Name"
+  #           Value: !Sub '${AWS::StackName}-Loadbalancer-Security-Group'
 
-  BastionSecurityGroup:
-    Type: AWS::EC2::SecurityGroup
-    Properties:
-      VpcId: !Ref VPC
-      GroupDescription: Allows anyone to access the basion host ssh port
-      SecurityGroupIngress:
-        - IpProtocol: tcp
-          FromPort: 22
-          ToPort: 22
-          CidrIp: 0.0.0.0/0
-      Tags:
-          - Key: "Name"
-            Value: !Sub '${AWS::StackName}-Bastion-Security-Group'
+  # BastionSecurityGroup:
+  #   Type: AWS::EC2::SecurityGroup
+  #   Properties:
+  #     VpcId: !Ref VPC
+  #     GroupDescription: Allows anyone to access the basion host ssh port
+  #     SecurityGroupIngress:
+  #       - IpProtocol: tcp
+  #         FromPort: 22
+  #         ToPort: 22
+  #         CidrIp: 0.0.0.0/0
+  #     Tags:
+  #         - Key: "Name"
+  #           Value: !Sub '${AWS::StackName}-Bastion-Security-Group'
 
-  ApplicationSecurityGroup:
-    Type: AWS::EC2::SecurityGroup
-    Properties:
-      VpcId: !Ref VPC
-      GroupDescription: allows anyone with route to this application to access its http and only bastion host to access its ssh port
-      SecurityGroupIngress:
-        - IpProtocol: tcp
-          FromPort: 80
-          ToPort: 80
-          CidrIp: 0.0.0.0/0
-        - IpProtocol: tcp
-          FromPort: 22
-          ToPort: 22
-          SourceSecurityGroupId: !Ref BastionSecurityGroup
-      Tags:
-          - Key: "Name"
-            Value: !Sub '${AWS::StackName}-Application-HTTP-BastionSSH-Security-Group'
+  # ApplicationSecurityGroup:
+  #   Type: AWS::EC2::SecurityGroup
+  #   Properties:
+  #     VpcId: !Ref VPC
+  #     GroupDescription: allows anyone with route to this application to access its http and only bastion host to access its ssh port
+  #     SecurityGroupIngress:
+  #       - IpProtocol: tcp
+  #         FromPort: 80
+  #         ToPort: 80
+  #         CidrIp: 0.0.0.0/0
+  #       - IpProtocol: tcp
+  #         FromPort: 22
+  #         ToPort: 22
+  #         SourceSecurityGroupId: !Ref BastionSecurityGroup
+  #     Tags:
+  #         - Key: "Name"
+  #           Value: !Sub '${AWS::StackName}-Application-HTTP-BastionSSH-Security-Group'
 #Launch Configuration
-  LaunchHTTPServerUbuntu: 
-    Type: AWS::AutoScaling::LaunchConfiguration
-    Properties:
-      UserData:
-        Fn::Base64: !Sub |
-          #!/bin/bash
-          apt-get update -y
-          apt-get install unzip awscli -y
-          apt-get install apache2 -y
-          systemctl start apache2.service
-          echo "it works! Udagram, Udacity" > /var/www/html/index.html
-          echo "Datetime of creation: $(date)" >> /var/www/html/index.html
-      ImageId: ami-0729e439b6769d6ab
-      SecurityGroups: [!Ref ApplicationSecurityGroup]
-      InstanceType: 't3.small'
-      BlockDeviceMappings:
-        - DeviceName: "/dev/sdb"
-          Ebs:
-              VolumeSize: '10' #10GB
-              DeleteOnTermination: true
+  # LaunchHTTPServerUbuntu: 
+  #   Type: AWS::AutoScaling::LaunchConfiguration
+  #   Properties:
+  #     UserData:
+  #       Fn::Base64: !Sub |
+  #         #!/bin/bash
+  #         apt-get update -y
+  #         apt-get install unzip awscli -y
+  #         apt-get install apache2 -y
+  #         systemctl start apache2.service
+  #         echo "it works! Udagram, Udacity" > /var/www/html/index.html
+  #         echo "Datetime of creation: $(date)" >> /var/www/html/index.html
+  #     ImageId: ami-0729e439b6769d6ab
+  #     SecurityGroups: [!Ref ApplicationSecurityGroup]
+  #     InstanceType: 't3.small'
+  #     BlockDeviceMappings:
+  #       - DeviceName: "/dev/sdb"
+  #         Ebs:
+  #             VolumeSize: '10' #10GB
+  #             DeleteOnTermination: true
 #Elastic Ips
-  NATElasticIP0:
-    Type: "AWS::EC2::EIP"
-    Properties:
-      Domain: "vpc"
-  NATElasticIP1:
-    Type: "AWS::EC2::EIP"
-    Properties:
-      Domain: "vpc"
+  # NATElasticIP0:
+  #   Type: "AWS::EC2::EIP"
+  #   Properties:
+  #     Domain: "vpc"
+  # NATElasticIP1:
+  #   Type: "AWS::EC2::EIP"
+  #   Properties:
+  #     Domain: "vpc"
   BastionElasticIP:
     Type: "AWS::EC2::EIP"
     Properties:
